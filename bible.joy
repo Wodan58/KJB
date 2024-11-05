@@ -1,0 +1,29 @@
+(*
+    module  : bible.joy
+    version : 1.2
+    date    : 10/18/24
+*)
+"seqlib" libload.
+"tree.joy" include.
+
+LIBRA
+bytelist-to-bitstring == "" swap ["" swap 8 [2 div 48 + chr rollup consd]
+			 times pop concat] step;
+       tree-to-string == [null not] [uncons [['0 =] [pop first] [pop rest]
+			 ifte [size 1 =] [first " " concat reversestring
+			 swap [swap concat] dip dup] [] ifte] dip] while
+			 pop pop pop.
+
+(* this triggers the compiler *)
+0 __settracegc.
+
+(* 2 parameters: offset, length *)
+"bible.dat" "rb" fopen	(* offset length fp *)
+rollup			(* file offset length *)
+[0 fseek pop] dip	(* file length *)
+fread			(* file [..] *)
+[fclose] dip		(* [..] *)
+bytelist-to-bitstring	(* ".." *)
+["" tree dup] dip	(* ".." [..] [..] "" *)
+tree-to-string		(* ".." *)
+reversestring.		(* ".." -> one result *)
